@@ -59,6 +59,16 @@ This is the description of an example service for OpenStack.
 
 This package contains Example common files.
 
+%package doc
+Summary:	Example documentation
+
+BuildRequires: python-sphinx
+BuildRequires: python-oslo-sphinx
+
+%description common
+This is the description of an example service for OpenStack.
+
+This package contains the documentation.
 
 %prep
 %autosetup -n %{service}-%{upstream_version}
@@ -72,6 +82,10 @@ rm -rf %{service}.egg-info
 
 %build
 %py2_build
+# generate html docs
+sphinx-build doc/source html
+# remove the sphinx-build leftovers
+rm -rf html/.{doctrees,buildinfo}
 
 %install
 %py2_install
@@ -138,6 +152,10 @@ exit 0
 %dir %{_datadir}/%{service}
 %dir %{_sharedstatedir}/%{service}
 %dir %{_sharedstatedir}/log/%{service}
+
+%files doc
+%license LICENSE
+%doc html README.rst
 
 %changelog
 
