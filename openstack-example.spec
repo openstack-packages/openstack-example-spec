@@ -10,12 +10,14 @@ URL:		http://launchpad.net/%{service}/
 Source0:	http://tarballs.openstack.org/%{service}/%{service}-master.tar.gz
 Source1:	%{service}.logrotate
 Source2:	openstack-example-server.service
+Source3:    %{service}-dist.conf
 
 BuildArch:	noarch
 
 BuildRequires:	python2-devel
 BuildRequires:	python-pbr
 BuildRequires:	python-setuptools
+BuildRequires:  git
 BuildRequires:	systemd-units
 
 Requires:	openstack-%{service}-common = %{version}-%{release}
@@ -71,13 +73,10 @@ This is the description of an example service for OpenStack.
 This package contains the documentation.
 
 %prep
-%autosetup -n %{service}-%{upstream_version}
+%autosetup -n %{service}-%{upstream_version} -S git
 
 # Let's handle dependencies ourseleves
-rm -f requirements.txt
-
-# Kill egg-info in order to generate new SOURCES.txt
-rm -rf %{service}.egg-info
+rm -f *requirements.txt
 
 
 %build
@@ -99,6 +98,9 @@ install -d -m 755 %{buildroot}%{_localstatedir}/log/%{service}
 install -d -m 755 %{buildroot}%{_sysconfdir}/%{service}
 mv %{buildroot}/usr/etc/%{service}/* %{buildroot}%{_sysconfdir}/%{service}
 mv %{buildroot}%{_sysconfdir}/%{service}/api-paste.ini %{buildroot}%{_datadir}/%{service}/api-paste.ini
+
+# Install dist conf
+install -p -D -m 640 %{SOURCE3} %{buildroot}%{_datadir}/%{service}/%{service}-dist.conf
 
 # Install logrotate
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-%{service}
@@ -150,6 +152,7 @@ exit 0
 %config(noreplace) %attr(0640, root, %{service}) %{_sysconfdir}/%{service}/%{service}.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/openstack-%{service}
 %dir %{_datadir}/%{service}
+%attr(-, root, %{service}) %{_datadir}/%{service}/%{service}-dist.conf
 %dir %{_sharedstatedir}/%{service}
 %dir %{_sharedstatedir}/log/%{service}
 
