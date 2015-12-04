@@ -1,0 +1,15 @@
+[Unit]
+Description=OpenStack Example Server
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=example
+ExecStart=/usr/bin/openstack-example-server --config-file /usr/share/example/example-dist.conf --config-file /etc/example/example.conf --log-file /var/log/example/example.log
+PrivateTmp=true
+NotifyAccess=all
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
