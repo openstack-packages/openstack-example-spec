@@ -18,6 +18,7 @@ BuildRequires:	python2-devel
 BuildRequires:	python-pbr
 BuildRequires:	python-setuptools
 BuildRequires:  git
+BuildRequires:	systemd
 BuildRequires:	systemd-units
 
 Requires:	openstack-%{service}-common = %{version}-%{release}
