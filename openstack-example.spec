@@ -68,7 +68,7 @@ Summary:	Example documentation
 BuildRequires: python-sphinx
 BuildRequires: python-oslo-sphinx
 
-%description common
+%description doc
 This is the description of an example service for OpenStack.
 
 This package contains the documentation.
