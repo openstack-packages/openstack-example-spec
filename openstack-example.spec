@@ -155,7 +155,7 @@ exit 0
 %dir %{_datadir}/%{service}
 %attr(-, root, %{service}) %{_datadir}/%{service}/%{service}-dist.conf
 %dir %{_sharedstatedir}/%{service}
-%dir %{_sharedstatedir}/log/%{service}
+%dir %{_localstatedir}/log/%{service}
 
 %files doc
 %license LICENSE
