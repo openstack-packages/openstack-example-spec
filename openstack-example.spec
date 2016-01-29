@@ -1,3 +1,5 @@
+%{!?upstream_version: %global upstream_version %{version}%{?milestone}}
+
 %global service example
 
 Name:		openstack-%{service}
