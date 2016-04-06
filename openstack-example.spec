@@ -47,7 +47,7 @@ This package contains the Example Python library.
 
 %package -n python-%{service}-tests
 Summary:	Example tests
-Requires:	openstack-%{service} = %{version}-%{release}
+Requires:	python-%{service} = %{version}-%{release}
 
 %description -n python-%{service}-tests
 This is the description of an example service for OpenStack.
