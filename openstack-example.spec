@@ -22,6 +22,8 @@ BuildRequires:	python-setuptools
 BuildRequires:  git
 BuildRequires:	systemd
 BuildRequires:	systemd-units
+# Required to compile translation files
+BuildRequires:  python-babel
 
 Requires:	openstack-%{service}-common = %{version}-%{release}
 
@@ -88,6 +90,8 @@ rm -f *requirements.txt
 sphinx-build doc/source html
 # remove the sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
+# Generate i18n files
+%{__python2} setup.py compile_catalog -d build/lib/%{service}/locale
 
 %install
 %py2_install
@@ -111,6 +115,14 @@ install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack
 # Install systemd units
 install -p -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/openstack-example-server.service
 
+# Install i18n .mo files (.po and .pot are not required)
+install -d -m 755 %{buildroot}%{_datadir}
+rm -f %{buildroot}%{python2_sitelib}/%{service}/locale/*/LC_*/%{service}*po
+rm -f %{buildroot}%{python2_sitelib}/%{service}/locale/*pot
+mv %{buildroot}%{python2_sitelib}/%{service}/locale %{buildroot}%{_datadir}/locale
+
+# Find language files
+%find_lang %{service} --all-name
 
 %pre common
 getent group %{service} >/dev/null || groupadd -r %{service}
@@ -148,7 +160,7 @@ exit 0
 %exclude %{python2_sitelib}/%{service}/tests
 
 
-%files common
+%files common -f %{service}.lang
 %license LICENSE
 %doc README.rst
 %dir %{_sysconfdir}/%{service}
