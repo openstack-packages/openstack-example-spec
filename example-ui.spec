@@ -24,6 +24,10 @@ BuildRequires: python-oslo-sphinx
 BuildRequires: git
 # Required to compile translation files
 BuildRequires: python-django
+# openstack-dashboard is probably required for running tests
+# if your project uses own tests, remove this, otherwise uncomment.
+# BuildRequires: openstack-dashboard
+
 BuildRequires: gettext
 
 Requires: openstack-dashboard
@@ -38,7 +42,7 @@ Summary: Documentation for example dashboard
 Documentation files for example dashboard
 
 %prep
-%autosetup -n %{pypy-name}-%{version} -S git
+%autosetup -n %{pypy-name}-%{upstream_version} -S git
 
 # Let RPM handle the dependencies
 rm -rf {test-,}requirements.txt tools/{pip,test}-requires
