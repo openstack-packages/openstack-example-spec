@@ -1,84 +1,92 @@
-Name:         openstack-app-catalog-ui
+
+%global pypi_name example-dashboard
+%global mod_name example_dashboard
+
+# tests are disabled by default
+%bcond_with tests
+
+Name:         openstack-example-ui
 Version:      XXX
 Release:      XXX
-Summary:      The UI component for the OpenStack App Catalog
+Summary:      The UI component for the OpenStack example service
 
 License:      ASL 2.0
-URL:          https://github.com/stackforge/apps-catalog-ui
-Source0:      https://pypi.python.org/packages/source/a/app-catalog-ui/app-catalog-ui-%{version}.tar.gz
+URL:          https://github.com/openstack/%{pypi_name}
+Source0:      http://tarballs.openstack.org/%{pypi_name}/%{pypi_name}-%{upstream_version}.tar.gz
 
 BuildArch:     noarch
 
 BuildRequires: python2-devel
 BuildRequires: python-setuptools
 BuildRequires: python-pbr
-BuildRequires: python-flake8
-BuildRequires: openstack-dashboard
+BuildRequires: python-sphinx
+BuildRequires: python-oslo-sphinx
+BuildRequires: git
+# Required to compile translation files
+BuildRequires: python-django
+# openstack-dashboard is probably required for running tests
+# if your project uses own tests, remove this, otherwise uncomment.
+# BuildRequires: openstack-dashboard
 
-Requires: pytz
+BuildRequires: gettext
+
 Requires: openstack-dashboard
-Requires: python-scss
 Requires: python-pbr
-Requires: python-oslo-config
-
 
 %description
-app-catalog-ui is an OpenStack Horizon user interface plugin to provide easy access to the OpenStack App Catalog.
+openstack-example-ui is a dashboard for example service
+
+%package doc
+Summary: Documentation for example dashboard
+%description doc
+Documentation files for example dashboard
 
 %prep
-%setup -q -n app-catalog-ui-%{upstream_version}
+%autosetup -n %{pypy-name}-%{upstream_version} -S git
 
-# Remove the requirements file so that pbr hooks don't add it
-# to distutils requires_dist config
+# Let RPM handle the dependencies
 rm -rf {test-,}requirements.txt tools/{pip,test}-requires
 
 %build
-export OSLO_PACKAGE_VERSION=%{version}
-%{__python2} setup.py build
+# build
+%py2_build
+# Generate i18n files
+pushd build/lib/%{mod_name}
+django-admin compilemessages
+popd
+# Build html documentation
+sphinx-build doc/source html
 
 %install
-export OSLO_PACKAGE_VERSION=%{version}
-%{__python2} setup.py install -O1 --skip-build --root %{buildroot}
+%py2_install
 
 # Move config to horizon
-mkdir -p  %{buildroot}%{_sysconfdir}/openstack-dashboard/enabled
-mkdir -p  %{buildroot}%{_datadir}/openstack-dashboard/openstack_dashboard/local/enabled
-mv enabled/_80_project_catalog_panel_group.py %{buildroot}%{_sysconfdir}/openstack-dashboard/enabled/_80_project_catalog_panel_group.py
-mv enabled/_90_project_app_catalog_panel.py %{buildroot}%{_sysconfdir}/openstack-dashboard/enabled/_90_project_app_catalog_panel.py
-mv enabled/_91_project_component_catalog_panel.py %{buildroot}%{_sysconfdir}/openstack-dashboard/enabled/_91_project_component_catalog_panel.py
-ln -s %{_sysconfdir}/openstack-dashboard/enabled/_80_project_catalog_panel_group.py %{buildroot}%{_datadir}/openstack-dashboard/openstack_dashboard/local/enabled/_80_project_catalog_panel_group.py
-ln -s %{_sysconfdir}/openstack-dashboard/enabled/_90_project_app_catalog_panel.py %{buildroot}%{_datadir}/openstack-dashboard/openstack_dashboard/local/enabled/_90_project_app_catalog_panel.py
-ln -s %{_sysconfdir}/openstack-dashboard/enabled/_91_project_component_catalog_panel.py %{buildroot}%{_datadir}/openstack-dashboard/openstack_dashboard/local/enabled/_91_project_component_catalog_panel.py
+mkdir -p %{buildroot}%{_datadir}/openstack-dashboard/openstack_dashboard/local/enabled/
+# replace XXX_example for a expression that match files for each specific dashboard
+install -p -D -m 640 %{mod_name}/enabled/_XXX_example* %{buildroot}%{_datadir}/openstack-dashboard/openstack_dashboard/local/enabled/
 
-# Move static files to horizon. These require that you compile them again
-# post install { python manage.py compress }
-mkdir -p  %{buildroot}%{python2_sitelib}/app_catalog/static
-mkdir -p  %{buildroot}%{python2_sitelib}/app_catalog/templates
-mkdir -p  %{buildroot}%{python2_sitelib}/component_catalog/templates
-cp -r app_catalog/static/* %{buildroot}%{python2_sitelib}/app_catalog/static/
-cp -r app_catalog/templates/* %{buildroot}%{python2_sitelib}/app_catalog/templates/
-cp -r component_catalog/templates/* %{buildroot}%{python2_sitelib}/component_catalog/templates/
+# Remove .po and .pot (they are not required)
+rm -f %{buildroot}%{python2_sitelib}/%{mod_name}/locale/*/LC_*/django*.po
+rm -f %{buildroot}%{python2_sitelib}/%{mod_name}/locale/*pot
+
+# Find language files
+%find_lang django --all-name
 
 %check
-# no upstream tests
+%if %{?with_test}
+%{__python2} setup.py test
+%endif
 
-%files
+%files -f django.lang
 %doc README.rst
 %license LICENSE
-%dir %{python2_sitelib}/app_catalog
-%dir %{python2_sitelib}/component_catalog
+%{python2_sitelib}/%{mod_name}
 %{python2_sitelib}/*.egg-info
-%{python2_sitelib}/app_catalog/*.py*
-%{python2_sitelib}/app_catalog/templates
-%{python2_sitelib}/app_catalog/static
-%{python2_sitelib}/component_catalog/*.py*
-%{python2_sitelib}/component_catalog/templates
-%{_datadir}/openstack-dashboard/openstack_dashboard/local/enabled/_80_project_catalog_panel_group.py*
-%{_datadir}/openstack-dashboard/openstack_dashboard/local/enabled/_90_project_app_catalog_panel.py*
-%{_datadir}/openstack-dashboard/openstack_dashboard/local/enabled/_91_project_component_catalog_panel.py*
-%{_sysconfdir}/openstack-dashboard/enabled/_80_project_catalog_panel_group.py*
-%{_sysconfdir}/openstack-dashboard/enabled/_90_project_app_catalog_panel.py*
-%{_sysconfdir}/openstack-dashboard/enabled/_91_project_component_catalog_panel.py*
+%{_datadir}/openstack-dashboard/openstack_dashboard/local/enabled/_XXX_example*
+
+%files doc
+%doc html
+%license LICENSE
 
 %changelog
 
