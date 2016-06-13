@@ -1,3 +1,4 @@
+%{!?upstream_version: %global upstream_version %{version}%{?milestone}}
 
 %global pypi_name example-dashboard
 %global mod_name example_dashboard
@@ -42,7 +43,7 @@ Summary: Documentation for example dashboard
 Documentation files for example dashboard
 
 %prep
-%autosetup -n %{pypy-name}-%{upstream_version} -S git
+%autosetup -n %{pypi_name}-%{upstream_version} -S git
 
 # Let RPM handle the dependencies
 rm -rf {test-,}requirements.txt tools/{pip,test}-requires
@@ -73,7 +74,7 @@ rm -f %{buildroot}%{python2_sitelib}/%{mod_name}/locale/*pot
 %find_lang django --all-name
 
 %check
-%if %{?with_test}
+%if %{?with_tests}
 %{__python2} setup.py test
 %endif
 
