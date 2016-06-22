@@ -56,6 +56,8 @@ django-admin compilemessages
 popd
 # Build html documentation
 sphinx-build doc/source html
+# remove the sphinx-build leftovers
+rm -rf html/.{doctrees,buildinfo}
 
 %install
 %py2_install
