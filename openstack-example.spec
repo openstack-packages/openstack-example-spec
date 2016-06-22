@@ -47,15 +47,27 @@ This is the description of an example service for OpenStack.
 This package contains the Example Python library.
 
 
-%package -n python-%{service}-tests
-Summary:	Example tests
+%package -n python-%{service}-tests-unit
+Summary:	Example unit tests
 Requires:	python-%{service} = %{version}-%{release}
+
+%description -n python-%{service}-tests-unit
+This is the description of an example service for OpenStack.
+
+This package contains the Example unit test files.
+
+# python-%{service}-tests package is for backwards compatibility
+# it can be ignored for new services
+%package -n python-%{service}-tests
+Summary:	Example tests meta-package
+Requires:	python-%{service}-tests-unit = %{version}-%{release}
+Requires:	python-%{service}-tests-tempest
 
 %description -n python-%{service}-tests
 This is the description of an example service for OpenStack.
 
-This package contains the Example test files.
-
+This package is a meta-package for all service tests packages including
+unit and tempest tests.
 
 %package common
 Summary:	Example common files
@@ -148,9 +160,9 @@ exit 0
 %attr(-, root, %{service}) %{_datadir}/%{service}/api-paste.ini
 
 
-%files -n python-%{service}-tests
+%files -n python-%{service}-tests-unit
 %license LICENSE
-%{python2_sitelib}/%{service}/tests
+%{python2_sitelib}/%{service}/tests-unit
 
 
 %files -n python-%{service}
