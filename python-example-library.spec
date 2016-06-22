@@ -29,8 +29,12 @@ BuildRequires:  python2-devel
 BuildRequires:  python-pbr
 BuildRequires:  python-setuptools
 BuildRequires:  git
+# Required to compile translation files (add only if exist)
+BuildRequires:  python-babel
 
 Requires:   python-oslo-config >= 2:3.4.0
+# If translation files exist
+Requires:       python-%{library}-lang >= %{version}-%{release}
 
 %description -n python2-%{library}
 OpenStack example library.
@@ -57,6 +61,13 @@ OpenStack example library.
 
 This package contains the documentation.
 
+# Add python-%{library}-lang if translation files exist
+%package  -n python-%{library}-lang
+Summary:   Translation files for example library
+
+%description -n python-%{library}-lang
+Translation files for example library
+
 %if 0%{?with_python3}
 %package -n python3-%{library}
 Summary:    OpenStack Example library
@@ -68,6 +79,8 @@ BuildRequires:  python3-setuptools
 BuildRequires:  git
 
 Requires:   python3-oslo-config >= 2:3.4.0
+# If translation files exist
+Requires:       python-%{library}-lang >= %{version}-%{release}
 
 %description -n python3-%{library}
 OpenStack example library.
@@ -106,11 +119,27 @@ sphinx-build doc/source html
 # remove the sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
 
+# Generate i18n files if translation files exist
+%{__python2} setup.py compile_catalog -d build/lib/%{module}/locale
+
 %install
 %py2_install
 %if 0%{?with_python3}
 %py3_install
 %endif
+
+# Install i18n .mo files (.po and .pot are not required) if translation files exist
+install -d -m 755 %{buildroot}%{_datadir}
+rm -f %{buildroot}%{python2_sitelib}/%{module}/locale/*/LC_*/%{module}*po
+rm -f %{buildroot}%{python2_sitelib}/%{module}/locale/*pot
+mv %{buildroot}%{python2_sitelib}/%{module}/locale %{buildroot}%{_datadir}/locale
+%if 0%{?with_python3}
+rm -rf %{buildroot}%{python3_sitelib}/%{module}/locale
+%endif
+
+# Find language files
+%find_lang %{module} --all-name
+
 
 %check
 %if 0%{?with_python3}
@@ -132,6 +161,9 @@ rm -rf .testrepository
 %files -n python-%{library}-doc
 %license LICENSE
 %doc html README.rst
+
+# Only if translation files exist
+%files -n python-%{library}-lang -f %{module}.lang
 
 %if 0%{?with_python3}
 %files python3-%{library}
