@@ -34,7 +34,7 @@ BuildRequires:  python-babel
 
 Requires:   python-oslo-config >= 2:3.4.0
 # If translation files exist
-Requires:       python-%{library}-lang >= %{version}-%{release}
+Requires:       python-%{library}-lang = %{version}-%{release}
 
 %description -n python2-%{library}
 OpenStack example library.
@@ -80,7 +80,7 @@ BuildRequires:  git
 
 Requires:   python3-oslo-config >= 2:3.4.0
 # If translation files exist
-Requires:       python-%{library}-lang >= %{version}-%{release}
+Requires:       python-%{library}-lang = %{version}-%{release}
 
 %description -n python3-%{library}
 OpenStack example library.
