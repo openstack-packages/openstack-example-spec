@@ -99,7 +99,7 @@ rm -f *requirements.txt
 %build
 %py2_build
 # generate html docs
-sphinx-build doc/source html
+%{__python2} setup.py build_sphinx
 # remove the sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
 # Generate i18n files

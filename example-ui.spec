@@ -56,7 +56,7 @@ pushd build/lib/%{mod_name}
 django-admin compilemessages
 popd
 # Build html documentation
-sphinx-build doc/source html
+%{__python2} setup.py build_sphinx
 # remove the sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
 

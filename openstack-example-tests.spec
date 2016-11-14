@@ -48,7 +48,7 @@ rm -f test-requirements.txt requirements.txt
 %{__python2} setup.py build
 
 # Build Documentation
-sphinx-build doc/source html
+%{__python2} setup.py build_sphinx
 # remove the sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
 

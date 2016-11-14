@@ -113,12 +113,12 @@ rm -f *requirements.txt
 %endif
 
 # generate html docs
-sphinx-build -b html doc/source html
+%{__python2} setup.py build_sphinx
 # remove the sphinx-build leftovers
 rm -rf html/.{doctrees,buildinfo}
 
 # If the client has man page uncomment following line
-# sphinx-build -b man doc/source man
+# %{__python2} setup.py build_sphinx --builder man
 
 %install
 
