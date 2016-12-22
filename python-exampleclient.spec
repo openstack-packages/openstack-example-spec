@@ -4,9 +4,6 @@
 # which is only in Fedora 24+
 %if 0%{?fedora} >= 24
 %global with_python3 1
-%global default_python 3
-%else
-%global default_python 2
 %endif
 
 
@@ -121,23 +118,20 @@ rm -rf html/.{doctrees,buildinfo}
 # %{__python2} setup.py build_sphinx --builder man
 
 %install
+%if 0%{?with_python3}
+# If an executable is provided by the package uncomment following lines
+#mv %{buildroot}%{_bindir}/%{executable} %{buildroot}%{_bindir}/%{executable}-%{python3_version}
+#ln -s ./%{executable}-%{python3_version} %{buildroot}%{_bindir}/%{executable}-3
+%py3_install
+# If an executable is provided by the package uncomment following lines
+#mv %{buildroot}%{_bindir}/%{executable} %{buildroot}%{_bindir}/%{executable}-%{python2_version}
+#ln -s %{_bindir}/%{executable}-%{python2_version} %{buildroot}%{_bindir}/%{executable}-2
+#ln -s %{_bindir}/%{executable}-2 %{buildroot}%{_bindir}/%{executable}
+%endif
 
 %py2_install
 # If the client has man page uncomment following line
 # install -p -D -m 644 man/%{executable}.1 %{buildroot}%{_mandir}/man1/%{executable}.1
-
-%if 0%{?with_python3}
-# If a executable is provided by the package uncomment following line
-#mv %{buildroot}%{_bindir}/%{executable} %{buildroot}%{_bindir}/python2-%{executable}
-%py3_install
-# If a executable is provided by the package uncomment following lines
-#mv %{buildroot}%{_bindir}/%{executable} %{buildroot}%{_bindir}/python3-%{executable}
-#%if 0%{?default_python} >= 3
-#ln -s %{_bindir}/python3-%{executable} %{buildroot}%{_bindir}/%{executable}
-#%else
-#ln -s %{_bindir}/python2-%{executable} %{buildroot}%{_bindir}/%{executable}
-#%endif
-%endif
 
 %check
 %if 0%{?with_python3}
@@ -153,10 +147,10 @@ rm -rf .testrepository
 %exclude %{python2_sitelib}/%{sclient}/tests
 # If the client has man page uncomment
 #%{_mandir}/man1/%{executable}.1
-# If a executable is provided by the package uncomment following lines
-#%{_bindir}/python2-%{executable}
-#%if 0%{?default_python} <= 2
+# If an executable is provided by the package uncomment following lines
 #%{_bindir}/%{executable}
+#%{_bindir}/%{executable}-2
+#%{_bindir}/%{executable}-%{python2_version}
 #%endif
 
 %files -n python2-%{sclient}-tests
@@ -175,11 +169,11 @@ rm -rf .testrepository
 %exclude %{python3_sitelib}/%{sclient}/tests
 # If the client has man page uncomment
 #%{_mandir}/man1/%{executable}.1
-# If a executable is provided by the package uncomment following lines
-#%{_bindir}/python3-%{executable}
-#%if 0%{?default_python} >= 3
-#%{_bindir}/%{executable}
+# If an executable is provided by the package uncomment following lines
+#%{_bindir}/%{executable}-3
+#%{_bindir}/%{executable}-%{python3_version}
 #%endif
+
 
 %files -n python3-%{library}-tests
 %license LICENSE
