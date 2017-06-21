@@ -35,6 +35,7 @@ BuildRequires:  python2-devel
 BuildRequires:  python-pbr
 BuildRequires:  python-setuptools
 BuildRequires:  git
+BuildRequires:  openstack-macros
 
 Requires:   python-xxxxx >= a.b.c
 
